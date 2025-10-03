@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Travel Planner</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2>Travel Planner Using Dijkstra's Algorithm</h2>
+
+    <h3>Add City</h3>
+    <input id="city-name" placeholder="City Name">
+    <button onclick="addCity()">Add City</button>
+
+    <h3>Add Route</h3>
+    <input id="from-city" placeholder="From City">
+    <input id="to-city" placeholder="To City">
+    <input id="distance" type="number" placeholder="Distance">
+    <button onclick="addRoute()">Add Route</button>
+
+    <h3>Find Shortest Path</h3>
+    <input id="source" placeholder="Source City">
+    <input id="destination" placeholder="Destination City">
+    <button onclick="findPath()">Find Path</button>
+
+    <div id="result"></div>
+
+    <script>
+        async function addCity() {
+            let city = document.getElementById('city-name').value;
+            let response = await fetch('/add_city', {
+                method: 'POST',
+                body: new URLSearchParams({'city': city})
+            });
+            let data = await response.json();
+            alert(data.result);
+        }
+
+        async function addRoute() {
+            let fromCity = document.getElementById('from-city').value;
+            let toCity = document.getElementById('to-city').value;
+            let distance = document.getElementById('distance').value;
+            let response = await fetch('/add_route', {
+                method: 'POST',
+                body: new URLSearchParams({'from': fromCity, 'to': toCity, 'distance': distance})
+            });
+            let data = await response.json();
+            alert(data.result);
+        }
+
+        async function findPath() {
+            let source = document.getElementById('source').value;
+            let destination = document.getElementById('destination').value;
+            let response = await fetch('/shortest_path', {
+                method: 'POST',
+                body: new URLSearchParams({'source': source, 'destination': destination})
+            });
+            let data = await response.json();
+            if (data.path.length === 0) {
+                document.getElementById('result').innerText = 'No path found';
+            } else {
+                document.getElementById('result').innerText = `Shortest path: ${data.path.join(' -> ')} (Distance: ${data.distance})`;
+            }
+        }
+    </script>
+</body>
+</html>
